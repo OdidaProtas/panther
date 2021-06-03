@@ -10,6 +10,8 @@ import LinkingConfiguration from './LinkingConfiguration';
 import Auth from "../screens/auth";
 import AuthContext from "../context/AuthContext";
 
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 export default function Navigation({colorScheme}: { colorScheme: ColorSchemeName }) {
     return (
         <NavigationContainer
@@ -24,14 +26,42 @@ const Stack = createStackNavigator<RootStackParamList>();
 
 const RootNavigator = () => {
 
-    const [isLoggedIn, setIsLoggedIn] = React.useState(false);
+    const [state, setState] = React.useState({
+        isLoggedIn: false,
+        user: {}
+    });
+
+    React.useEffect(() => {
+        const existingToken = async () => {
+            try {
+                const token = await AsyncStorage.getItem('@access_token');
+                if (token != null) {
+                    // setState(prevState => ({...prevState, isLoggedIn: true}));
+                }
+            } catch (e) {
+                console.log(e)
+            }
+        }
+        existingToken();
+    }, []);
+
+
+    const handleLoggedIn = async (user: any) => {
+        try {
+            await AsyncStorage.setItem('@access_token', user.token);
+            setState(prevState => ({...prevState, user: user, isLoggedIn: true}))
+        } catch (e) {
+            console.log(e);
+        }
+    }
+
 
     return (
         <AuthContext.Provider
-            value={{isLogged: isLoggedIn, setIsLoggedIn: setIsLoggedIn}}
+            value={{isLogged: state.isLoggedIn, handleLoggedIn: handleLoggedIn, user: state.user}}
         >
             <Stack.Navigator screenOptions={{headerShown: false}}>
-                {isLoggedIn ?
+                {state.isLoggedIn ?
                     <Stack.Screen name="Root" component={BottomTabNavigator}/>
 
                     :

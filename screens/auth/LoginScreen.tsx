@@ -3,7 +3,7 @@ import {View, Text} from "../../components/Themed";
 import {Button, Caption, Colors, TextInput, Title} from "react-native-paper";
 import {StyleSheet} from "react-native";
 import AuthContext from "../../context/AuthContext";
-
+import axiosInstance from "../../constants/AxiosInstance";
 
 interface LoginScreenInterface {
     handleScreenChange: any
@@ -11,7 +11,7 @@ interface LoginScreenInterface {
 
 const LoginScreen: React.FC<LoginScreenInterface> = ({handleScreenChange}) => {
 
-    const {setIsLoggedIn} = React.useContext(AuthContext) as any;
+    const {handleLoggedIn} = React.useContext(AuthContext) as any;
 
     const [state, setState] = React.useState({
         phoneNumber: "",
@@ -27,13 +27,15 @@ const LoginScreen: React.FC<LoginScreenInterface> = ({handleScreenChange}) => {
         password: {
             present: false,
             desc: ""
-        }
+        },
+        credentials: false,
     });
 
     const handleChange = (name: string, text: string) => {
         setState((prev) => ({...prev, [name]: text}));
-        if (errors.phoneNumber.present || errors.password.present) {
+        if (errors.phoneNumber.present || errors.password.present || errors.credentials) {
             setErrors(prevState => ({...prevState, [name]: {present: false, desc: ""}}))
+            setErrors(prevState => ({...prevState, credentials: false}))
         }
     }
 
@@ -43,7 +45,16 @@ const LoginScreen: React.FC<LoginScreenInterface> = ({handleScreenChange}) => {
 
         if (!isPassValid(state.password).present && !isPhoneValid(state.phoneNumber).present) {
 
-
+            try {
+                let res = await axiosInstance.post('/login', state);
+                if (res.status === 200) {
+                    toggleLoading();
+                    handleLoggedIn(res.data);
+                }
+            } catch (e) {
+                toggleLoading();
+                setErrors(prevState => ({...prevState, credentials: true}));
+            }
             return;
         }
         if (isPhoneValid(state.phoneNumber).present) {
@@ -60,6 +71,10 @@ const LoginScreen: React.FC<LoginScreenInterface> = ({handleScreenChange}) => {
 
     const toggleLoading = () => {
         setState(prevState => ({...prevState, loading: !prevState.loading}));
+    }
+
+    const handleNull = () => {
+
     }
 
 
@@ -99,6 +114,9 @@ const LoginScreen: React.FC<LoginScreenInterface> = ({handleScreenChange}) => {
                     style={styles.textInput}
                     label="Password"
                     value={state.password}
+                    secureTextEntry={true}
+                    autoCorrect={false}
+                    returnKeyType="go"
                     onChangeText={text => handleChange("password", text)}
                     error={errors.password.present}
                 />
@@ -110,15 +128,22 @@ const LoginScreen: React.FC<LoginScreenInterface> = ({handleScreenChange}) => {
                     null
                 }
             </View>
+            {errors.credentials ?
+                <Caption>
+                    <Text darkColor={Colors.redA200} lightColor={Colors.redA200}>Invalid username or password</Text>
+                </Caption>
+                : null
+            }
+
             <Button
-                onPress={handleSubmit}
+                onPress={!state.loading ? handleSubmit : handleNull}
                 style={styles.login}
                 mode="contained"
                 uppercase={false}
                 color="#335145"
                 loading={state.loading}
             >
-                Login</Button>
+                {state.loading ? "" : "Login"}</Button>
             <Button
                 onPress={() => handleScreenChange("register")}
                 color={"#BEEF9E"}
@@ -137,7 +162,13 @@ const LoginScreen: React.FC<LoginScreenInterface> = ({handleScreenChange}) => {
 
 export default LoginScreen;
 
-const isPhoneValid = (phoneNumber: string) => {
+
+interface ValidInterface {
+    present: boolean;
+    desc: string;
+}
+
+const isPhoneValid = (phoneNumber: string): ValidInterface => {
     if (phoneNumber == "") return ({
         present: true,
         desc: "Phone number cannot be empty"
@@ -154,37 +185,26 @@ const isPhoneValid = (phoneNumber: string) => {
     });
 }
 
-const isPassValid = (password: string) => {
+const isPassValid = (password: string): ValidInterface => {
     if (password === "") return ({
         present: true,
         desc: "Password cannot be empty"
     });
-    // if (!testPasswordStrength(password)) {
-    //     return ({
-    //         present: true,
-    //         desc: "Please use a stronger password"
-    //     })
-    // }
     return ({
         present: false,
         desc: ""
     });
 }
 
-const formatPhoneNumber = (phoneNumber: string) => {
+export const formatPhoneNumber = (phoneNumber: string): number => {
     let formatted = parseInt(`254${phoneNumber.substring(1)}`);
     return formatted;
 }
 
 
-const numberIsValid = (formatted: number) => {
+export const numberIsValid = (formatted: number): boolean => {
     let _pattern = /^(?:254|\+254|0)?((?:7|1)(?:(?:[129][0-9])|(?:0[0-8])|(4[0-1]))[0-9]{6})$/;
     return _pattern.test(String(formatted));
-}
-
-const testPasswordStrength = (password: string) => {
-    let _pattern = /^(((?=.*[a-z])(?=.*[A-Z]))|((?=.*[a-z])(?=.*[0-9]))|((?=.*[A-Z])(?=.*[0-9])))(?=.{6,})$/;
-    return _pattern.test(password);
 }
 
 

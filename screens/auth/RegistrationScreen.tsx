@@ -1,6 +1,6 @@
 import React from 'react';
 import {View, Text} from "../../components/Themed";
-import {Platform, ScrollView, StyleSheet} from "react-native";
+import {ScrollView, StyleSheet} from "react-native";
 import {Button, TextInput, Title} from "react-native-paper";
 
 interface RegistrationScreenInterface {
@@ -8,6 +8,27 @@ interface RegistrationScreenInterface {
 }
 
 const RegistrationScreen: React.FC<RegistrationScreenInterface> = ({handleScreenChange}) => {
+
+    const [state, setState] = React.useState({
+        firstName: "",
+        lastName: "",
+        phoneNumber: "",
+        emailAddress: "",
+        password: "",
+        role: "merchant"
+    });
+
+    const [errors, setErrors] = React.useState();
+
+    const handleChange = (name: string, value: string) => {
+        setState(prevState => ({...prevState, [name]: value}));
+    }
+
+    const handleSubmit = () => {
+        if (isValidData(state).errorPresent) {
+            return;
+        }
+    }
 
     return (
         <ScrollView style={{flex: 1, backgroundColor: "#1E352F"}}>
@@ -22,8 +43,8 @@ const RegistrationScreen: React.FC<RegistrationScreenInterface> = ({handleScreen
                                 theme={{roundness: 9}}
                                 style={[styles.textInput, {width: "100%"}]}
                                 label="First Name"
-                                // value={state.text}
-                                // onChangeText={text => setState({...state, text: text})}
+                                value={state.firstName}
+                                onChangeText={text => handleChange("firstName", text)}
                             />
                         </View>
                         <View style={styles.gridItem}>
@@ -31,8 +52,8 @@ const RegistrationScreen: React.FC<RegistrationScreenInterface> = ({handleScreen
                                 theme={{roundness: 9}}
                                 style={[styles.textInput, {width: "100%"}]}
                                 label="Last Name"
-                                // value={state.text}
-                                // onChangeText={text => setState({...state, text: text})}
+                                value={state.lastName}
+                                onChangeText={text => handleChange("lastName", text)}
                             />
                         </View>
                     </View>
@@ -41,30 +62,32 @@ const RegistrationScreen: React.FC<RegistrationScreenInterface> = ({handleScreen
                         style={styles.textInput}
                         keyboardType="numeric"
                         label="Phone Number"
-                        // value={state.text}
-                        // onChangeText={text => setState({...state, text: text})}
+                        value={state.phoneNumber}
+                        onChangeText={text => handleChange("phoneNumber", text)}
                     />
                     <TextInput
                         theme={{roundness: 9}}
                         style={styles.textInput}
                         keyboardType="email-address"
                         label="Email address"
-                        // value={state.text}
-                        // onChangeText={text => setState({...state, text: text})}
+                        value={state.emailAddress}
+                        onChangeText={text => handleChange("emailAddress", text)}
                     />
                     <TextInput
                         theme={{roundness: 9}}
                         style={styles.textInput}
                         label="Password"
-                        // value={state.text}
-                        // onChangeText={text => setState({...state, text: text})}
+                        secureTextEntry={true}
+                        returnKeyType="go"
+                        value={state.password}
+                        onChangeText={text => handleChange("password", text)}
                     />
                 </View>
                 <Button
                     style={styles.register}
                     mode="contained"
                     color={"#335145"}
-                    onPress={() => console.log("pressed")}
+                    onPress={handleSubmit}
                     uppercase={false}>Submit</Button>
                 <Button
                     onPress={() => handleScreenChange("login")}
@@ -76,6 +99,31 @@ const RegistrationScreen: React.FC<RegistrationScreenInterface> = ({handleScreen
         </ScrollView>
     );
 }
+
+interface IsValidDataInterface {
+    errorPresent: boolean,
+    name: string,
+    desc: string
+}
+
+const isValidData = (state: any): IsValidDataInterface => {
+    return ({
+        errorPresent: false,
+        name: "firstName",
+        desc: "this is a name"
+    });
+}
+
+const isValidateEmail = (email: string): boolean => {
+    let _pattern = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+    return _pattern.test(email);
+}
+
+const testPasswordStrength = (password: string) => {
+    let _pattern = /^(((?=.*[a-z])(?=.*[A-Z]))|((?=.*[a-z])(?=.*[0-9]))|((?=.*[A-Z])(?=.*[0-9])))(?=.{6,})$/;
+    return _pattern.test(password);
+}
+
 
 export default RegistrationScreen;
 
