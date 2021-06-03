@@ -1,10 +1,12 @@
-const tintColorLight = '#2f95dc';
-const tintColorDark = '#fff';
+import {Colors} from "react-native-paper";
+
+const tintColorLight = '#1E352F';
+const tintColorDark = Colors.greenA200;
 
 export default {
   light: {
-    text: '#000',
-    background: '#fff',
+    text: '#1E352F',
+    background: '#EAFFDA',
     tint: tintColorLight,
     tabIconDefault: '#ccc',
     tabIconSelected: tintColorLight,

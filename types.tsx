@@ -1,22 +1,33 @@
-/**
- * Learn more about using TypeScript with React Navigation:
- * https://reactnavigation.org/docs/typescript/
- */
-
 export type RootStackParamList = {
-  Root: undefined;
-  NotFound: undefined;
+    Root: undefined;
+    NotFound: undefined;
+    Auth: undefined;
 };
 
 export type BottomTabParamList = {
-  TabOne: undefined;
-  TabTwo: undefined;
+    Home: undefined;
+    Inventory: undefined;
+    Orders: undefined;
+    Sales: undefined;
+    Profile: undefined;
 };
 
-export type TabOneParamList = {
-  TabOneScreen: undefined;
+export type HomeParamList = {
+    HomeScreen: undefined;
 };
 
-export type TabTwoParamList = {
-  TabTwoScreen: undefined;
+export type InventoryParamList = {
+    InventoryScreen: undefined;
 };
+
+export type OrdersParamList = {
+    OrdersScreen: undefined;
+}
+
+export type SalesParamList = {
+    SalesScreen: undefined;
+}
+
+export type ProfileParamList = {
+    ProfileScreen: undefined;
+}
