@@ -6,7 +6,7 @@ const tintColorDark = Colors.greenA200;
 export default {
   light: {
     text: '#1E352F',
-    background: '#EAFFDA',
+    background: '#fff',
     tint: tintColorLight,
     tabIconDefault: '#ccc',
     tabIconSelected: tintColorLight,

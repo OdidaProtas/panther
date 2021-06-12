@@ -6,64 +6,71 @@ import * as React from 'react';
 import Colors from '../constants/Colors';
 import useColorScheme from '../hooks/useColorScheme';
 import HomeScreen from '../screens/HomeScreen';
-import ProfileScreen from '../screens/ProfileScreen';
 import {
     BottomTabParamList,
     HomeParamList,
     OrdersParamList,
     SalesParamList,
-    ProfileParamList,
+    SettingsParamList,
     InventoryParamList
 } from '../types';
 import InventoryScreen from "../screens/shop/InventoryScreen";
 import OrdersScreen from "../screens/shop/OrdersScreen";
-import SalesScreen from "../screens/shop/SalesScreen";
+import useShops from "../hooks/shops/useShops";
+import AuthContext from "../context/AuthContext";
+import ShopContext from "../context/ShopContext";
+import SettingsScreen from "../screens/settings";
+import {IconButton} from "react-native-paper";
 
 const BottomTab = createBottomTabNavigator<BottomTabParamList>();
 
+
 export default function BottomTabNavigator() {
+
     const colorScheme = useColorScheme();
 
+    const {context} = React.useContext(AuthContext) as any;
+
+    const shopsApi = useShops(context.user.id, context.token);
+
     return (
-        <BottomTab.Navigator
-            initialRouteName="Home"
-            tabBarOptions={{activeTintColor: Colors[colorScheme].tint}}>
-            <BottomTab.Screen
-                name="Home"
-                component={HomeNavigator}
-                options={{
-                    tabBarIcon: ({color}) => <TabBarIcon name="ios-home" color={color}/>,
-                }}
-            />
-            <BottomTab.Screen
-                name="Inventory"
-                component={InventoryNavigator}
-                options={{
-                    tabBarIcon: ({color}) => <TabBarIcon name="ios-list" color={color}/>,
-                }}
-            />
-            <BottomTab.Screen
-                name="Orders"
-                component={OrdersNavigator}
-                options={{
-                    tabBarIcon: ({color}) => <TabBarIcon name="ios-cart" color={color}/>,
-                }}
-            />
-            <BottomTab.Screen
-                name="Sales"
-                component={SalesNavigator}
-                options={{
-                    tabBarIcon: ({color}) => <TabBarIcon name="cash" color={color}/>,
-                }}
-            />
-            <BottomTab.Screen
-                name="Profile"
-                component={ProfileNavigator}
-                options={{
-                    tabBarIcon: ({color}) => <TabBarIcon name="ios-person" color={color}/>,
-                }}
-            />
-        </BottomTab.Navigator>
+        <ShopContext.Provider value={{
+            shopApi: shopsApi,
+            products: [],
+        }}>
+            <BottomTab.Navigator
+                initialRouteName="Home"
+                tabBarOptions={{activeTintColor: Colors[colorScheme].tint}}>
+                <BottomTab.Screen
+                    name="Home"
+                    component={HomeNavigator}
+                    options={{
+                        tabBarIcon: ({color}) => <IconButton icon="home" color={color}/>,
+                    }}
+                />
+                <BottomTab.Screen
+                    name="Inventory"
+                    component={InventoryNavigator}
+                    options={{
+                        tabBarIcon: ({color}) => <IconButton icon="view-list" color={color}/>,
+                    }}
+                />
+                <BottomTab.Screen
+                    name="Sales & Orders"
+                    component={OrdersNavigator}
+                    options={{
+                        tabBarIcon: ({color}) => <IconButton icon="shopping" color={color}/>,
+                    }}
+                />
+                <BottomTab.Screen
+                    name="Settings"
+                    component={SettingsNavigator}
+                    options={{
+                        tabBarIcon: ({color}) => <IconButton icon="account-settings" color={color}/>,
+                    }}
+                />
+            </BottomTab.Navigator>
+        </ShopContext.Provider>
     );
 }
 
@@ -115,30 +122,16 @@ const OrdersNavigator = () => (
 );
 
 
-const SalesStack = createStackNavigator<SalesParamList>();
+const SettingsStack = createStackNavigator<SettingsParamList>();
 
-const SalesNavigator = () => (
-    <SalesStack.Navigator
+const SettingsNavigator = () => (
+    <SettingsStack.Navigator
         screenOptions={{headerShown: false}}
     >
-        <SalesStack.Screen
-            name="SalesScreen"
-            component={SalesScreen}
-            options={{headerTitle: 'Sales'}}
-        />
-    </SalesStack.Navigator>
-);
-
-const ProfileStack = createStackNavigator<ProfileParamList>();
-
-const ProfileNavigator = () => (
-    <ProfileStack.Navigator
-        screenOptions={{headerShown: false}}
-    >
-        <ProfileStack.Screen
-            name="ProfileScreen"
-            component={ProfileScreen}
+        <SettingsStack.Screen
+            name="SettingsScreen"
+            component={SettingsScreen}
             options={{headerTitle: "Profile"}}
         />
-    </ProfileStack.Navigator>
+    </SettingsStack.Navigator>
 );

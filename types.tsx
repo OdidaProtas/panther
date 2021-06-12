@@ -2,14 +2,15 @@ export type RootStackParamList = {
     Root: undefined;
     NotFound: undefined;
     Auth: undefined;
+    Setup: undefined;
+    Scanner: undefined
 };
 
 export type BottomTabParamList = {
     Home: undefined;
     Inventory: undefined;
-    Orders: undefined;
-    Sales: undefined;
-    Profile: undefined;
+    "Sales & Orders": undefined;
+    Settings: undefined;
 };
 
 export type HomeParamList = {
@@ -28,6 +29,6 @@ export type SalesParamList = {
     SalesScreen: undefined;
 }
 
-export type ProfileParamList = {
-    ProfileScreen: undefined;
+export type SettingsParamList = {
+    SettingsScreen: undefined;
 }

@@ -21,6 +21,7 @@ const WelcomeScreen: React.FC<WelcomeScreenInterface> = ({handleScreenChange}) =
                     mode={"contained"}
                     uppercase={false}
                     color={"#335145"}
+                    theme={{roundness: 24}}
                 >
                     Log In</Button>
                 <Button
@@ -28,6 +29,7 @@ const WelcomeScreen: React.FC<WelcomeScreenInterface> = ({handleScreenChange}) =
                     style={styles.signupButton}
                     uppercase={false}
                     color={"#BEEF9E"}
+                    theme={{roundness: 24}}
                 >
                     Register</Button>
             </View>

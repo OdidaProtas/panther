@@ -31,7 +31,7 @@ const LoginScreen: React.FC<LoginScreenInterface> = ({handleScreenChange}) => {
         credentials: false,
     });
 
-    const handleChange = (name: string, text: string) => {
+    const handleChange = (name: string, text: string): void => {
         setState((prev) => ({...prev, [name]: text}));
         if (errors.phoneNumber.present || errors.password.present || errors.credentials) {
             setErrors(prevState => ({...prevState, [name]: {present: false, desc: ""}}))
@@ -69,56 +69,46 @@ const LoginScreen: React.FC<LoginScreenInterface> = ({handleScreenChange}) => {
         }
     }
 
-    const toggleLoading = () => {
+    const toggleLoading = (): void => {
         setState(prevState => ({...prevState, loading: !prevState.loading}));
     }
 
-    const handleNull = () => {
+    const handleNull = (): void => {
 
     }
 
 
     return (
         <View style={styles.root}>
-            <Title>
-                <Text
-                    darkColor={"#BEEF9E"}
-                    lightColor={"#BEEF9E"}
-                >Welcome back</Text>
-            </Title>
+            <Title><Text darkColor={"#BEEF9E"} lightColor={"#BEEF9E"}>Welcome back</Text></Title>
             <View style={styles.form}>
                 <TextInput
-                    theme={{roundness: 10}}
-                    style={styles.textInput}
                     keyboardType="numeric"
                     label="Phone Number"
+                    theme={{roundness: 10}}
+                    style={styles.textInput}
                     value={state.phoneNumber}
-                    onChangeText={text => handleChange("phoneNumber", text)}
                     error={errors.phoneNumber.present}
+                    onChangeText={text => handleChange("phoneNumber", text)}
                 />
                 {errors.phoneNumber.present ?
-                    <Caption
-                        style={{paddingLeft: 9}}
-                    >
-                        <Text
-                            lightColor={Colors.redA200}
-                            darkColor={Colors.redA200}
-                        >{errors.phoneNumber.desc}
-                        </Text>
+                    <Caption style={{paddingLeft: 9}}>
+                        <Text lightColor={Colors.redA200} darkColor={Colors.redA200}>{errors.phoneNumber.desc}</Text>
                     </Caption>
-                    : null
+                    :
+                    null
                 }
                 <TextInput
-                    theme={{roundness: 10}}
                     textContentType="password"
-                    style={styles.textInput}
                     label="Password"
+                    returnKeyType="go"
+                    theme={{roundness: 10}}
+                    style={styles.textInput}
                     value={state.password}
                     secureTextEntry={true}
                     autoCorrect={false}
-                    returnKeyType="go"
-                    onChangeText={text => handleChange("password", text)}
                     error={errors.password.present}
+                    onChangeText={text => handleChange("password", text)}
                 />
                 {errors.password.present ?
                     <Caption style={{marginLeft: 9}}>
@@ -130,32 +120,39 @@ const LoginScreen: React.FC<LoginScreenInterface> = ({handleScreenChange}) => {
             </View>
             {errors.credentials ?
                 <Caption>
-                    <Text darkColor={Colors.redA200} lightColor={Colors.redA200}>Invalid username or password</Text>
+                    <Text darkColor={Colors.redA200} lightColor={Colors.redA200}>
+                        Invalid username or password
+                    </Text>
                 </Caption>
-                : null
+                :
+                null
             }
 
             <Button
-                onPress={!state.loading ? handleSubmit : handleNull}
                 style={styles.login}
                 mode="contained"
                 uppercase={false}
                 color="#335145"
                 loading={state.loading}
+                theme={{roundness: 24}}
+                onPress={!state.loading ? handleSubmit : handleNull}
             >
-                {state.loading ? "" : "Login"}</Button>
+                {state.loading ? "Submit" : "Login"}
+            </Button>
             <Button
+                color={"#BEEF9E"}
+                uppercase={false}
                 onPress={() => handleScreenChange("register")}
-                color={"#BEEF9E"}
-                uppercase={false}
             >
-                Register</Button>
+                Register
+            </Button>
             <Button
-                onPress={() => handleScreenChange("reset_pass")}
                 color={"#BEEF9E"}
                 uppercase={false}
+                onPress={() => handleScreenChange("reset_pass")}
             >
-                Reset password</Button>
+                Reset password
+            </Button>
         </View>
     );
 }
@@ -203,7 +200,7 @@ export const formatPhoneNumber = (phoneNumber: string): number => {
 
 
 export const numberIsValid = (formatted: number): boolean => {
-    let _pattern = /^(?:254|\+254|0)?((?:7|1)(?:(?:[129][0-9])|(?:0[0-8])|(4[0-1]))[0-9]{6})$/;
+    let _pattern = /^(?:254|\+254|0)?((?:7|1|2)(?:(?:[129][0-9])|(?:0[0-8])|(4[0-1]))[0-9]{6})$/;
     return _pattern.test(String(formatted));
 }
 
