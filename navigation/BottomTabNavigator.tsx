@@ -21,6 +21,7 @@ import AuthContext from "../context/AuthContext";
 import ShopContext from "../context/ShopContext";
 import SettingsScreen from "../screens/settings";
 import {IconButton} from "react-native-paper";
+import useProducts from "../hooks/shops/useProducts";
 
 const BottomTab = createBottomTabNavigator<BottomTabParamList>();
 
@@ -32,11 +33,12 @@ export default function BottomTabNavigator() {
     const {context} = React.useContext(AuthContext) as any;
 
     const shopsApi = useShops(context.user.id, context.token);
+    const productsApi = useProducts(context);
 
     return (
         <ShopContext.Provider value={{
             shopApi: shopsApi,
-            products: [],
+            productsApi: productsApi,
         }}>
             <BottomTab.Navigator
                 initialRouteName="Home"
@@ -49,10 +51,10 @@ export default function BottomTabNavigator() {
                     }}
                 />
                 <BottomTab.Screen
-                    name="Inventory"
+                    name="Catalog"
                     component={InventoryNavigator}
                     options={{
-                        tabBarIcon: ({color}) => <IconButton icon="view-list" color={color}/>,
+                        tabBarIcon: ({color}) => <IconButton icon="ballot" color={color}/>,
                     }}
                 />
                 <BottomTab.Screen

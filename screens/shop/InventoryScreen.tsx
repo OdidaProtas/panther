@@ -1,11 +1,13 @@
 import React from 'react';
 import {View, Text} from "../../components/Themed";
 import {Platform, StyleSheet} from "react-native";
-import {Button, Caption, FAB, Title} from "react-native-paper";
+import {Button, Caption, FAB, Searchbar, Title} from "react-native-paper";
 import CustomActionSheet from "../../components/CustomActionSheet";
-import ShopContext from "../../context/ShopContext";
 import LottieView from 'lottie-react-native';
 import ProductsForm from "./widgets/ProductsForm";
+import InventoryContext from "../../context/InventoryContext";
+import InventoryIndex from "../inventory";
+import ActionButtons from "../inventory/ActionButtons";
 
 
 const EmptyWidget = () => {
@@ -36,32 +38,61 @@ const EmptyWidget = () => {
     )
 }
 
+
 const InventoryScreen = () => {
 
-    const {products} = React.useContext(ShopContext) as any;
     const actionSheetRef = React.createRef() as any;
-
+    const [searchQuery, setSearchQuery] = React.useState('');
 
     const toggleProductForm = (): void => {
         actionSheetRef.current?.setModalVisible();
     }
 
+    const onChangeSearch = (query: string) => setSearchQuery(query);
+
     return (
-        <View style={styles.root}>
-            <Title style={styles.title}><Text>Products</Text></Title>
-            <CustomActionSheet actionSheetRef={actionSheetRef} Context={ProductsForm}/>
-            {products.length > 0 ?
-                null
-                :
-                <EmptyWidget/>
-            }
-            <Button
-                style={styles.fab}
-                icon="plus"
-                theme={{roundness: 24}}
-                onPress={() => toggleProductForm()}
-            >Add Products</Button>
-        </View>
+        <InventoryContext.Provider value={{
+            actionSheetRef: actionSheetRef
+        }}>
+            <View style={styles.root}>
+                <View style={styles.grid}>
+                    <View style={{width: "40%"}}>
+                        <Title style={styles.title}>
+                            <Text lightColor={"#1E352F"}>Catalog</Text>
+                        </Title>
+                    </View>
+                    <View style={{
+                        width: "60%"
+                    }}>
+                        <Searchbar
+                            placeholder="Search"
+                            onChangeText={onChangeSearch}
+                            value={searchQuery}
+                            style={styles.searchBar}
+                        />
+
+                    </View>
+                </View>
+                {true ?
+                    <InventoryIndex/>
+                    :
+                    <>
+                        <EmptyWidget/>
+                        <Button
+                            icon="plus"
+                            uppercase={false}
+                            style={styles.fab}
+                            theme={{roundness: 24}}
+                            onPress={() => toggleProductForm()}
+                        >
+                            Add
+                        </Button>
+                    </>
+                }
+                <CustomActionSheet actionSheetRef={actionSheetRef} Context={ProductsForm}/>
+                <ActionButtons/>
+            </View>
+        </InventoryContext.Provider>
     );
 }
 
@@ -75,9 +106,7 @@ const styles = StyleSheet.create({
         paddingVertical: 18
     },
     title: {
-        margin: 9,
-        marginTop: 64,
-        alignSelf: "center"
+        marginTop: 9,
     },
     fab: {
         margin: 18,
@@ -88,5 +117,17 @@ const styles = StyleSheet.create({
     emptyCaption: {
         alignSelf: "center",
         marginBottom: 144
+    },
+    grid: {
+        display: "flex",
+        flexDirection: "row",
+        marginTop: 36,
+        paddingHorizontal: 9
+    },
+    gridItem: {
+        width: "50%"
+    },
+    searchBar: {
+        elevation: 1
     }
 })

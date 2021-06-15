@@ -6,7 +6,7 @@ import {DefaultTheme, Provider as PaperProvider} from 'react-native-paper';
 import useCachedResources from './hooks/useCachedResources';
 import useColorScheme from './hooks/useColorScheme';
 import Navigation from './navigation';
-
+import StorageContext from "./context/StorageInstance";
 
 const theme = {
     ...DefaultTheme,
@@ -27,12 +27,14 @@ const App = () => {
         return null;
     } else {
         return (
-            <PaperProvider theme={theme}>
-                <SafeAreaProvider>
-                    <Navigation colorScheme={colorScheme}/>
-                    <StatusBar/>
-                </SafeAreaProvider>
-            </PaperProvider>
+            <StorageContext.Provider value={{cos: ""}}>
+                <PaperProvider theme={theme}>
+                    <SafeAreaProvider>
+                        <Navigation colorScheme={colorScheme}/>
+                        <StatusBar/>
+                    </SafeAreaProvider>
+                </PaperProvider>
+            </StorageContext.Provider>
         );
     }
 }
